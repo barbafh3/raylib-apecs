@@ -1,0 +1,40 @@
+cabal-version:      3.6
+name:               raylib-apecs-test
+version:            0.1.0.0
+
+-- A short (one-line) description of the package.
+-- synopsis:
+
+-- A longer description of the package.
+-- description:
+
+-- A URL where users can report bugs.
+-- bug-reports:
+license:            MIT
+license-file:       LICENSE
+author:             barbafh3
+maintainer:         barbafh@gmail.com
+
+-- A copyright notice.
+-- copyright:
+-- category:
+extra-source-files: CHANGELOG.md
+
+executable raylib-apecs-test
+    main-is:          Main.hs
+    other-modules:    
+                      Components
+                      Input
+                      Update
+                      Draw
+                      Tilemap
+
+    -- LANGUAGE extensions used by modules in this package.
+    -- other-extensions:
+    build-depends:    base
+                     ,random
+                     ,apecs
+                     ,linear
+                     ,h-raylib
+    hs-source-dirs:   app
+    default-language: Haskell2010
