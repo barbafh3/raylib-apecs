@@ -20,47 +20,51 @@ import Raylib
 import Apecs
 import Linear (V2 (..))
 import Raylib.Types (Camera2D(..), Vector2 (..), Texture)
-import Raylib.Constants (key'w, key'd, key's, key'a, key'up)
+import Raylib.Constants (key'w, key'd, key's, key'a, key'up, mouseButton'left, mouseButton'right)
 import GHC.Base (when)
 import Input
-import Components (System', Position (..), initWorld', InputAction (..), InputState (..))
+import Components (System', initWorld', InputAction (..), InputState (..), CameraComponent (..))
 import Raylib.Colors (rayWhite)
 import Update (updateGame)
 import Draw (drawGame)
 import Tilemap (generateTilemap)
 
-tilesetPath :: String
+tilesetPath, uiAtlasPath :: String
 tilesetPath = "assets/tileset.png"
+uiAtlasPath = "assets/ui.png"
 
 gameInputActions :: [InputAction]
 gameInputActions = [
-    InputAction "Left" [key'a] Up,
-    InputAction "Right" [key'd] Up,
-    InputAction "Down" [key's] Up,
-    InputAction "Up" [key'w, key'up] Up
+    InputAction "MoveLeft" [key'a] Up,
+    InputAction "MoveRight" [key'd] Up,
+    InputAction "MoveDown" [key's] Up,
+    InputAction "MoveUp" [key'w, key'up] Up,
+    InputAction "LeftClick" [mouseButton'left] Up,
+    InputAction "RightClick" [mouseButton'right] Up
   ]
-
 
 main :: IO ()
 main = initWorld' >>= runSystem game
 
 game :: System' ()
 game = do 
-  setupInputActions gameInputActions
-  _ <- newEntity $ Position 1
   liftIO $ do 
     initWindow 1280 720 "Protobuilder"
-    setTargetFPS 60
+    setTargetFPS 75
+
+  setupInputActions gameInputActions
 
   tileset <- liftIO $ loadTexture tilesetPath
-  generateTilemap
+  uiAtlas <- liftIO $ loadTexture uiAtlasPath
+  generateTilemap 1024 1024
 
   let camera = Camera2D (Vector2 0.0 0.0) (Vector2 0.0 0.0) 0.0 2.0
-  gameLoop tileset camera
+  _ <- newEntity $ CameraComponent 10.0 camera
+  gameLoop tileset uiAtlas
   liftIO closeWindow
 
-gameLoop :: Texture -> Camera2D -> System' ()
-gameLoop tileset camera = do
+gameLoop :: Texture -> Texture -> System' ()
+gameLoop tileset uiAtlas = do
   handleInput
   updateGame
 
@@ -68,10 +72,10 @@ gameLoop tileset camera = do
     beginDrawing
     clearBackground rayWhite
 
-  drawGame tileset camera
+  drawGame tileset uiAtlas
 
   liftIO endDrawing
 
   shouldClose <- liftIO windowShouldClose
-  unless shouldClose (gameLoop tileset camera)
+  unless shouldClose (gameLoop tileset uiAtlas)
 

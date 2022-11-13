@@ -1,9 +1,10 @@
-module Input (handleInput, setupInputActions) where
+module Input (handleInput, setupInputActions, isActionDown) where
 
 import Apecs
 import Raylib.Constants
 import Raylib
-import Components (System', InputList (..), InputAction (..), InputState (..))
+import Components (System', InputList (..), InputAction (..), InputState (..), CameraComponent (..))
+import Raylib.Types (Camera2D (..), Vector2 (..))
 
 setupInputActions :: [InputAction] -> System' ()
 setupInputActions actions = do
@@ -31,9 +32,8 @@ handleActionList (action: actions) = do
 handleAction :: InputAction -> System' InputAction
 handleAction action@(InputAction _ [] _) = return action
 handleAction action@(InputAction name keys state) = do
-  -- liftIO $ print $ "Action '" ++ name ++ "' state: " ++ show state
-  actionPressed <- liftIO $ actionKeyPressed keys
-  actionReleased <- liftIO $ actionKeyReleased keys
+  actionPressed <- liftIO $ handleActionKeyPressed keys
+  actionReleased <- liftIO $ handleActionKeyReleased keys
   if actionPressed then do
     return $ InputAction name keys Pressed
   else if actionReleased then do
@@ -43,20 +43,25 @@ handleAction action@(InputAction name keys state) = do
     Pressed -> return $ InputAction name keys Down
     _ -> return action
 
-
-actionKeyPressed :: [Int] -> IO Bool
-actionKeyPressed [] = return False
-actionKeyPressed [key] = liftIO $ isKeyPressed key
-actionKeyPressed (key: keys) = do
+handleActionKeyPressed :: [Int] -> IO Bool
+handleActionKeyPressed [] = return False
+handleActionKeyPressed [key] = liftIO $ isKeyPressed key
+handleActionKeyPressed (key: keys) = do
   thisKey <- liftIO $ isKeyPressed key
-  nextKeys <- liftIO $ actionKeyPressed keys
+  nextKeys <- liftIO $ handleActionKeyPressed keys
   return (thisKey || nextKeys)
 
-actionKeyReleased :: [Int] -> IO Bool
-actionKeyReleased [] = return False
-actionKeyReleased [key] = liftIO $ isKeyReleased key
-actionKeyReleased (key: keys) = do
+handleActionKeyReleased :: [Int] -> IO Bool
+handleActionKeyReleased [] = return False
+handleActionKeyReleased [key] = liftIO $ isKeyReleased key
+handleActionKeyReleased (key: keys) = do
   thisKey <- liftIO $ isKeyReleased key
-  nextKeys <- liftIO $ actionKeyReleased keys
+  nextKeys <- liftIO $ handleActionKeyReleased keys
   return (thisKey || nextKeys)
+
+isActionDown :: String -> [InputAction] -> Bool
+isActionDown _ [] = False
+isActionDown name (InputAction actionName keys state : actions) 
+  | name == actionName && (state == Down || state == Pressed) = True
+  | otherwise = isActionDown name actions
 

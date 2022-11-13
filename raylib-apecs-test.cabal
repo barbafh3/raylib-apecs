@@ -28,6 +28,8 @@ executable raylib-apecs-test
                       Update
                       Draw
                       Tilemap
+                      UI
+                      Utils
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
@@ -38,3 +40,6 @@ executable raylib-apecs-test
                      ,h-raylib
     hs-source-dirs:   app
     default-language: Haskell2010
+
+    package h-raylib
+      flags: +detect-platform
