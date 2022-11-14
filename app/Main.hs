@@ -19,15 +19,18 @@ import Raylib
   )
 import Apecs
 import Linear (V2 (..))
-import Raylib.Types (Camera2D(..), Vector2 (..), Texture)
+import Raylib.Types (Camera2D(..), Vector2 (..), Texture, Rectangle (..))
 import Raylib.Constants (key'w, key'd, key's, key'a, key'up, mouseButton'left, mouseButton'right)
 import GHC.Base (when)
 import Input
-import Components (System', initWorld', InputAction (..), InputState (..), CameraComponent (..))
+import Components (System', initWorld', InputAction (..), InputState (..), CameraComponent (..), World (World), ShowFPS (..), BodyCollision (..), CollisionBox (..), DrawCollisions (..))
 import Raylib.Colors (rayWhite)
 import Update (updateGame)
 import Draw (drawGame)
-import Tilemap (generateTilemap)
+import Tilemap (generateTilemap, tileSizeCF)
+import UI (uiStartup)
+import Debug.Trace (traceShow)
+import Data.Data (typeOf)
 
 tilesetPath, uiAtlasPath :: String
 tilesetPath = "assets/tileset.png"
@@ -58,8 +61,15 @@ game = do
   uiAtlas <- liftIO $ loadTexture uiAtlasPath
   generateTilemap 1024 1024
 
+  uiStartup
+
   let camera = Camera2D (Vector2 0.0 0.0) (Vector2 0.0 0.0) 0.0 2.0
+
   _ <- newEntity $ CameraComponent 10.0 camera
+  _ <- newEntity $ ShowFPS False
+  _ <- newEntity $ DrawCollisions False
+
+  _ <- newEntity (BodyCollision False Nothing, CollisionBox (Rectangle 500.0 500.0 tileSizeCF tileSizeCF))
   gameLoop tileset uiAtlas
   liftIO closeWindow
 

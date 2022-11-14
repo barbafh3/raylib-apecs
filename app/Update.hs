@@ -5,11 +5,13 @@ import Tilemap (checkVisibleTilemapChunks)
 import Input (isActionDown)
 import Raylib.Types (Camera2D (..), Vector2 (..))
 import Apecs 
+import UI (updateUI)
 
 updateGame :: System' ()
 updateGame = do
     checkVisibleTilemapChunks
     moveCamera
+    updateUI
 
 moveCamera :: System' ()
 moveCamera = 

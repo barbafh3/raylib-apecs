@@ -64,7 +64,7 @@ checkVisibleTilemapChunks = do
 checkChunkVisibility :: Rectangle -> Chunk -> System' Chunk
 checkChunkVisibility cameraRect (Chunk rect@(Rectangle rx ry rw rh) tiles visibility) = do
   let chunkRect = Rectangle (rx * tileSizeCF) (ry * tileSizeCF) chunkRawSizeCF chunkRawSizeCF
-  when (rx == 0 && ry == 0) $ liftIO $ print $ show chunkRect ++ " - " ++ show cameraRect
+  -- when (rx == 0 && ry == 0) $ liftIO $ print $ show chunkRect ++ " - " ++ show cameraRect
   return $ Chunk rect tiles $ areBoxesColliding chunkRect cameraRect
 
 drawTilemap :: Texture -> System' ()

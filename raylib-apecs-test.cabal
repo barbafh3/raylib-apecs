@@ -27,9 +27,11 @@ executable raylib-apecs-test
                       Input
                       Update
                       Draw
+                      Collision
                       Tilemap
                       UI
                       Utils
+                      GameWorld
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
@@ -38,6 +40,7 @@ executable raylib-apecs-test
                      ,apecs
                      ,linear
                      ,h-raylib
+                     ,template-haskell
     hs-source-dirs:   app
     default-language: Haskell2010
 
