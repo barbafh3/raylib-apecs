@@ -1,0 +1,26 @@
+{
+    // Automatically created by phoityne-vscode extension.
+    "version": "2.0.0",
+    "presentation": {
+        "reveal": "always",
+        "panel": "new"
+    },
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "cabal build",
+            "command": "cabal build"
+        },
+        {
+            "type": "shell",
+            "label": "cabal run",
+            "command": "cabal run",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "revealProblems": "onProblem",
+                "close": true
+            }
+        },
+    ]
+}

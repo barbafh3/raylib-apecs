@@ -1,12 +1,22 @@
 {-# OPTIONS -Wall #-}
-{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE ScopedTypeVariables   #-}
-{-# LANGUAGE TypeFamilies          #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# OPTIONS_GHC -Wno-unused-imports #-}
+
 module Main where
 
+import Apecs
+import Components
 import Control.Monad (unless)
+import Data.Data (typeOf)
+import Debug.Trace (traceShow)
+import Draw (drawGame)
+import GHC.Base (when)
+import Hauler (newHauler)
+import Input
+import Linear (V2 (..))
 import Raylib
   ( beginDrawing,
     clearBackground,
@@ -14,78 +24,84 @@ import Raylib
     drawText,
     endDrawing,
     initWindow,
+    isKeyDown,
+    isKeyPressed,
+    isKeyReleased,
+    isKeyUp,
+    loadTexture,
     setTargetFPS,
-    windowShouldClose, isKeyDown, isKeyPressed, isKeyReleased, isKeyUp, loadTexture,
+    windowShouldClose,
   )
-import Apecs
-import Linear (V2 (..))
-import Raylib.Types (Camera2D(..), Vector2 (..), Texture, Rectangle (..))
-import Raylib.Constants (key'w, key'd, key's, key'a, key'up, mouseButton'left, mouseButton'right)
-import GHC.Base (when)
-import Input
-import Components (System', initWorld', InputAction (..), InputState (..), CameraComponent (..), World (World), ShowFPS (..), BodyCollision (..), CollisionBox (..), DrawCollisions (..))
 import Raylib.Colors (rayWhite)
-import Update (updateGame)
-import Draw (drawGame)
+import Raylib.Constants (key'a, key'd, key's, key'up, key'w, mouseButton'left, mouseButton'right)
+import Raylib.Types (Camera2D (..), Rectangle (..), Texture, Vector2 (..))
 import Tilemap (generateTilemap, tileSizeCF)
 import UI (uiStartup)
-import Debug.Trace (traceShow)
-import Data.Data (typeOf)
+import Update (updateGame)
 
 tilesetPath, uiAtlasPath :: String
 tilesetPath = "assets/tileset.png"
 uiAtlasPath = "assets/ui.png"
 
-gameInputActions :: [InputAction]
-gameInputActions = [
-    InputAction "MoveLeft" [key'a] Up,
-    InputAction "MoveRight" [key'd] Up,
-    InputAction "MoveDown" [key's] Up,
-    InputAction "MoveUp" [key'w, key'up] Up,
-    InputAction "LeftClick" [mouseButton'left] Up,
-    InputAction "RightClick" [mouseButton'right] Up
+gameKeyboardActions :: [KeyboardAction]
+gameKeyboardActions =
+  [ KeyboardAction MoveLeft [key'a] Up,
+    KeyboardAction MoveRight [key'd] Up,
+    KeyboardAction MoveDown [key's] Up,
+    KeyboardAction MoveUp [key'w, key'up] Up
+  ]
+
+gameMouseActions :: [MouseAction]
+gameMouseActions =
+  [ MouseAction LeftClick [mouseButton'left] Up,
+    MouseAction RightClick [mouseButton'right] Up
   ]
 
 main :: IO ()
-main = initWorld' >>= runSystem game
+main = initWorld' >>= runSystem initializeGame
 
-game :: System' ()
-game = do 
-  liftIO $ do 
+initializeGame :: System' ()
+initializeGame = do
+  liftIO $ do
     initWindow 1280 720 "Protobuilder"
     setTargetFPS 75
 
-  setupInputActions gameInputActions
+  setupGlobalInputActions gameKeyboardActions gameMouseActions
 
-  tileset <- liftIO $ loadTexture tilesetPath
+  mapAtlas <- liftIO $ loadTexture tilesetPath
   uiAtlas <- liftIO $ loadTexture uiAtlasPath
+  set global $ GameAtlasSets mapAtlas uiAtlas
+
   generateTilemap 1024 1024
+
+  set global $ ShowFPS False
+  set global $ DrawCollisions False
 
   uiStartup
 
   let camera = Camera2D (Vector2 0.0 0.0) (Vector2 0.0 0.0) 0.0 2.0
+  set global $ CameraComponent 10.0 camera
 
-  _ <- newEntity $ CameraComponent 10.0 camera
-  _ <- newEntity $ ShowFPS False
-  _ <- newEntity $ DrawCollisions False
+  let idlePoint = Vector2 50.0 50.0
 
-  _ <- newEntity (BodyCollision False Nothing, CollisionBox (Rectangle 500.0 500.0 tileSizeCF tileSizeCF))
-  gameLoop tileset uiAtlas
+  _ <- newHauler (Vector2 10.0 10.0) idlePoint
+  _ <- newHauler (Vector2 70.0 70.0) idlePoint
+
+  gameLoop
   liftIO closeWindow
 
-gameLoop :: Texture -> Texture -> System' ()
-gameLoop tileset uiAtlas = do
+gameLoop :: System' ()
+gameLoop = do
   handleInput
   updateGame
 
-  liftIO $ do 
+  liftIO $ do
     beginDrawing
     clearBackground rayWhite
 
-  drawGame tileset uiAtlas
+  drawGame
 
   liftIO endDrawing
 
   shouldClose <- liftIO windowShouldClose
-  unless shouldClose (gameLoop tileset uiAtlas)
-
+  unless shouldClose gameLoop

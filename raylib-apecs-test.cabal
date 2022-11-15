@@ -22,7 +22,7 @@ extra-source-files: CHANGELOG.md
 
 executable raylib-apecs-test
     main-is:          Main.hs
-    other-modules:    
+    other-modules:
                       Components
                       Input
                       Update
@@ -32,6 +32,7 @@ executable raylib-apecs-test
                       UI
                       Utils
                       GameWorld
+                      Hauler
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
