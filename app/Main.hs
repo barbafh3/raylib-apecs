@@ -21,6 +21,7 @@ import Raylib
   ( beginDrawing,
     clearBackground,
     closeWindow,
+    drawCircle,
     drawText,
     endDrawing,
     initWindow,
@@ -32,7 +33,7 @@ import Raylib
     setTargetFPS,
     windowShouldClose,
   )
-import Raylib.Colors (rayWhite)
+import Raylib.Colors (black, rayWhite, white)
 import Raylib.Constants (key'a, key'd, key's, key'up, key'w, mouseButton'left, mouseButton'right)
 import Raylib.Types (Camera2D (..), Rectangle (..), Texture, Vector2 (..))
 import Tilemap (generateTilemap, tileSizeCF)
@@ -82,10 +83,10 @@ initializeGame = do
   let camera = Camera2D (Vector2 0.0 0.0) (Vector2 0.0 0.0) 0.0 2.0
   set global $ CameraComponent 10.0 camera
 
-  let idlePoint = Vector2 50.0 50.0
+  let idlePoint = Vector2 150.0 150.0
 
   _ <- newHauler (Vector2 10.0 10.0) idlePoint
-  _ <- newHauler (Vector2 70.0 70.0) idlePoint
+  _ <- newHauler (Vector2 20.0 20.0) idlePoint
 
   gameLoop
   liftIO closeWindow

@@ -19,7 +19,7 @@
                 "reveal": "always",
                 "panel": "shared",
                 "revealProblems": "onProblem",
-                "close": true
+                // "close": true
             }
         },
     ]

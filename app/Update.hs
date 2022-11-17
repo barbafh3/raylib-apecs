@@ -3,6 +3,7 @@ module Update where
 import Apecs
 import Collision (detectBodyCollisions, detectTriggerCollisions)
 import Components (CameraComponent (..), InputList (..), KeyboardActionName (..), System')
+import Hauler (updateVillagerCollision, updateVillagerIdleState)
 import Input (isKeyboardActionDown)
 import Raylib.Types (Camera2D (..), Vector2 (..))
 import Tilemap (checkVisibleTilemapChunks)
@@ -11,8 +12,13 @@ import UI (updateUI)
 updateGame :: System' ()
 updateGame = do
   checkVisibleTilemapChunks
+
+  updateVillagerIdleState
+  updateVillagerCollision
+
   detectBodyCollisions
   detectTriggerCollisions
+
   moveCamera
   updateUI
 
