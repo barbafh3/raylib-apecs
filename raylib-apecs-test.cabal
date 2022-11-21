@@ -27,12 +27,14 @@ executable raylib-apecs-test
                       Input
                       Update
                       Draw
-                      Collision
+                      Collisions
                       Tilemap
                       UI
                       Utils
                       GameWorld
-                      Hauler
+                      Villagers
+                      Villager.Hauler
+                      Building.Warehouse
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
@@ -42,6 +44,8 @@ executable raylib-apecs-test
                      ,linear
                      ,h-raylib
                      ,template-haskell
+                     ,hashmap
+                     ,hashable
     hs-source-dirs:   app
     default-language: Haskell2010
 

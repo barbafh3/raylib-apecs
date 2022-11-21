@@ -1,7 +1,7 @@
 module Draw where
 
 import Apecs
-import Collision (drawCollisions)
+import Collisions (drawCollisions)
 import Components (CameraComponent (..), Chunk (..), GameAtlasSets (GameAtlasSets), Sprite (..), System', Tile (..), Tilemap (..))
 import Raylib
 import Raylib.Colors (black, lightGray, white)

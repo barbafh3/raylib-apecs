@@ -1,5 +1,6 @@
 module Utils where
 
+import qualified Data.HashMap as Map
 import Foreign.C (CFloat)
 import GHC.Exts (coerce)
 import Raylib.Types (Rectangle (..), Vector2 (..))
@@ -66,3 +67,6 @@ isPointInsideBox (Vector2 px py) (Rectangle bx by bw bh) =
     && px <= (bx + bw - 1.0)
     && py >= by
     && py <= (by + bh - 1.0)
+
+mergeMaps :: (Ord k, Num a) => Map.Map k a -> Map.Map k a -> Map.Map k a
+mergeMaps = Map.unionWith (+)

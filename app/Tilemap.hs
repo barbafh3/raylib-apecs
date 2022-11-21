@@ -57,13 +57,14 @@ createTile (x, y) = do
 
 checkVisibleTilemapChunks :: System' ()
 checkVisibleTilemapChunks = do
-  (CameraComponent _ (Camera2D (Vector2 tx ty) _ _ zoom)) <- get global
+  (CameraComponent _ (Camera2D _ (Vector2 tx ty)  _ zoom)) <- get global
   cmapM $ \(Tilemap chunks, tilemap) -> do
     screenWidth <- liftIO getScreenWidth
     screenHeight <- liftIO getScreenHeight
     let cw = CFloat $ int2Float screenWidth
     let ch = CFloat $ int2Float screenHeight
-    let rect = Rectangle (-(tx / zoom)) (-(ty / zoom)) cw ch -- -> NOTE: I had to inverse and divide by the zoom to get the action camera position
+    -- let rect = Rectangle (tx / zoom) (ty / zoom) cw ch
+    let rect = Rectangle (tx - 16) (ty - 16) cw ch 
     newChunks <- mapM (checkChunkVisibility rect) chunks
     set tilemap $ Tilemap newChunks
 
