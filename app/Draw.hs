@@ -24,5 +24,5 @@ drawGame = do
 
 drawSprites :: System' ()
 drawSprites = cmapM_ $ \(Sprite position rect) -> do
-  (GameAtlasSets tileset uiAtlas) <- get global
+  (GameAtlasSets tileset _) <- get global
   liftIO $ drawTextureRec tileset rect position white

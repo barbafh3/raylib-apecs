@@ -106,23 +106,20 @@ initializeGame = do
 
   set global $ GlobalStorageList $ Map.fromList [("Wood", 50)]
 
-  uiStartup
-
   let camera = Camera2D (Vector2 0.0 0.0) (Vector2 0.0 0.0) 0.0 2.0
   set global $ CameraComponent 10.0 camera
+
+  uiStartup
 
   let idlePoint = Vector2 304.0 176.0
 
   -- Flag Sprite at IdlePoint
   _ <- newEntity (Sprite idlePoint (Rectangle (2.0 * tileSizeCF) (6.0 * tileSizeCF) tileSizeCF tileSizeCF))
 
-  _ <- newHauler (Vector2 10.0 10.0) idlePoint Trigger
-  _ <- newHauler (Vector2 20.0 20.0) idlePoint Trigger
+  _ <- newHauler (Vector2 250.0 50.0) idlePoint Trigger
+  _ <- newHauler (Vector2 250.0 250.0) idlePoint Trigger
 
   _ <- newWarehouse (Vector2 208.0 48.0) (Just $ Map.singleton "Wood" 50)
-
-  globalStorageLabel <- newLabel "Test" (Vector2 (screenWidthCF / 2.0) 12.0) (Vector2 0.0 0.0) 0 20.0 1.0 black
-  set globalStorageLabel GlobalStorageLabel
 
   gameLoop mainFont
   liftIO closeWindow

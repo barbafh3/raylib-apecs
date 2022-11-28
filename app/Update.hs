@@ -25,8 +25,6 @@ updateGame = do
   updateVillagerCollision
 
   detectCollisions
-  -- detectBodyCollisions
-  -- detectTriggerCollisions
 
   moveCamera
   updateUI

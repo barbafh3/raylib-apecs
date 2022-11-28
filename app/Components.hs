@@ -16,6 +16,7 @@ import Data.HashMap (HashMap)
 import qualified Data.HashMap as HM
 import Data.Hashable
 import Foreign.C (CFloat)
+import Foreign.C.Types (CInt)
 import Language.Haskell.TH ()
 import Language.Haskell.TH.Syntax
 import Linear (V2)
@@ -29,6 +30,18 @@ newtype ShowFPS = ShowFPS Bool deriving (Show)
 newtype DrawCollisions = DrawCollisions Bool deriving (Show)
 
 -- ------------------------------------------------------------------------------------------ GENERAL
+newtype Parent = Parent Entity
+
+newtype Position = Position Vector2
+
+newtype Offset = Offset Vector2
+
+newtype Layer = Layer CInt
+
+newtype Scale = Scale CFloat
+
+newtype Visibility = Visibility Bool
+
 data CameraComponent = CameraComponent CFloat Camera2D deriving (Show)
 
 newtype FontsComponent = FontsComponent Font deriving (Show)
@@ -62,7 +75,7 @@ data CollisionType = Trigger | Body deriving (Show, Eq)
 data Collision = Collision CollisionType Bool (Maybe Entity) Bool deriving (Show)
 
 -- ------------------------------------------------------------------------------------------ UI
-data UIElement = UIElement Vector2 Vector2 Int Bool deriving (Show)
+data UIElement = UIElement
 
 data ToggleButton = ToggleButton
 
@@ -73,11 +86,29 @@ data TextureButton = TextureButton Rectangle ButtonState ButtonAction deriving (
 data ButtonAction
   = ToggleFPSAction
   | ToggleDrawCollisionAction
+  | ToggleResourcePanel
+  | ToggleBuildingPanel
   deriving (Show, Eq)
+
+newtype DrawResourcePanel = DrawResourcePanel Bool deriving (Show)
+
+newtype DrawBuildingPanel = DrawBuildingPanel Bool deriving (Show)
 
 data Label = Label String Float Float Color deriving (Show)
 
 data GlobalStorageLabel = GlobalStorageLabel
+
+data GlobalWoodLabel = GlobalWoodLabel
+
+data GlobalStoneLabel = GlobalStoneLabel
+
+data GlobalPlankLabel = GlobalPlankLabel
+
+data GlobalStoneBrickLabel = GlobalStoneBrickLabel
+
+data ResourcePanel = ResourcePanel
+
+newtype UIImage = UIImage Rectangle deriving (Show)
 
 -- ------------------------------------------------------------------------------------------ TILEMAP
 data Tile = Tile Vector2 Rectangle deriving (Show)
@@ -113,7 +144,13 @@ data ConstructionSpace = ConstructionSpace Bool ResourceStorage deriving (Show)
 -- ------------------------------------------------------------------------------------------ MAKE WORLD
 makeWorldAndComponents
   "World"
-  [ ''CameraComponent,
+  [ ''Parent,
+    ''Position,
+    ''Offset,
+    ''Layer,
+    ''Scale,
+    ''Visibility,
+    ''CameraComponent,
     ''FontsComponent,
     ''GameAtlasSets,
     ''InputList,
@@ -122,14 +159,20 @@ makeWorldAndComponents
     ''ToggleButton,
     ''Label,
     ''UIElement,
+    ''UIImage,
     ''GlobalStorageLabel,
+    ''GlobalWoodLabel,
+    ''GlobalStoneLabel,
+    ''GlobalPlankLabel,
+    ''GlobalStoneBrickLabel,
     ''GlobalStorageList,
     ''ShowFPS,
     ''DrawCollisions,
+    ''DrawResourcePanel,
+    ''DrawBuildingPanel,
+    ''ResourcePanel,
     ''CollisionBox,
     ''Collision,
-    -- ''BodyCollision,
-    -- ''TriggerCollision,
     ''Sprite,
     ''Villager,
     ''IdleInfo,

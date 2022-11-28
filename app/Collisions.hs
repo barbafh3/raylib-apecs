@@ -1,10 +1,18 @@
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Collisions where
 
 import Apecs
-import Components (CollisionBox (..), DrawCollisions (..), System', Collision (..), CollisionType (..),)
+import Components
+  ( Collision (..),
+    CollisionBox (..),
+    CollisionType (..),
+    DrawBuildingPanel (..),
+    DrawCollisions (..),
+    DrawResourcePanel (..),
+    System',
+  )
 import Control.Monad (unless, when)
 import Foreign.C (CInt (..))
 import Raylib (drawRectangle)

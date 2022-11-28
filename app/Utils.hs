@@ -1,5 +1,10 @@
+{-# LANGUAGE TypeApplications #-}
+
 module Utils where
 
+import Apecs (Entity, Proxy (..), get)
+import Apecs.System (exists)
+import Components (Parent (Parent), System', Visibility (..))
 import qualified Data.HashMap as Map
 import Foreign.C (CFloat)
 import GHC.Exts (coerce)
@@ -70,3 +75,13 @@ isPointInsideBox (Vector2 px py) (Rectangle bx by bw bh) =
 
 mergeMaps :: (Ord k, Num a) => Map.Map k a -> Map.Map k a -> Map.Map k a
 mergeMaps = Map.unionWith (+)
+
+isParentVisible :: Entity -> System' Bool
+isParentVisible child = do
+  hasParent <- exists child (Proxy @Parent)
+  if hasParent
+    then do
+      (Parent parent) <- get child
+      (Visibility visible) <- get parent
+      return visible
+    else return True
