@@ -2,7 +2,17 @@ module Draw where
 
 import Apecs
 import Collisions (drawCollisions)
-import Components (CameraComponent (..), Chunk (..), GameAtlasSets (GameAtlasSets), Sprite (..), System', Tile (..), Tilemap (..))
+import Components
+  ( AtlasRegion (..),
+    CameraComponent (..),
+    Chunk (..),
+    GameAtlasSets (GameAtlasSets),
+    Position (..),
+    Sprite (..),
+    System',
+    Tile (..),
+    Tilemap (..),
+  )
 import Raylib
 import Raylib.Colors (black, lightGray, white)
 import Raylib.Types
@@ -23,6 +33,6 @@ drawGame = do
   drawUI
 
 drawSprites :: System' ()
-drawSprites = cmapM_ $ \(Sprite position rect) -> do
+drawSprites = cmapM_ $ \(Sprite, AtlasRegion rect, Position position) -> do
   (GameAtlasSets tileset _) <- get global
   liftIO $ drawTextureRec tileset rect position white

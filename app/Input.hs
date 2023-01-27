@@ -9,14 +9,30 @@ module Input
     isMouseActionDown,
     isMouseActionReleased,
     isMouseActionUp,
+    gameKeyboardActions,
+    gameMouseActions,
   )
 where
 
 import Apecs
 import Components
 import Raylib
-import Raylib.Constants
-import Raylib.Types (Camera2D (..), Vector2 (..))
+import Raylib.Types (Camera2D (..), KeyboardKey (..), MouseButton (MouseButtonLeft, MouseButtonRight), Vector2 (..))
+
+gameKeyboardActions :: [KeyboardAction]
+gameKeyboardActions =
+  [ KeyboardAction MoveLeft [KeyA] Up,
+    KeyboardAction MoveRight [KeyD] Up,
+    KeyboardAction MoveDown [KeyS] Up,
+    KeyboardAction MoveUp [KeyW, KeyUp] Up,
+    KeyboardAction AddStone [KeyO] Up
+  ]
+
+gameMouseActions :: [MouseAction]
+gameMouseActions =
+  [ MouseAction LeftClick [MouseButtonLeft] Up,
+    MouseAction RightClick [MouseButtonRight] Up
+  ]
 
 setupGlobalInputActions :: [KeyboardAction] -> [MouseAction] -> System' ()
 setupGlobalInputActions kbActions mouseActions = set global $ InputList kbActions mouseActions
@@ -51,7 +67,7 @@ handleKeyboardAction action@(KeyboardAction name keys state) = do
         | otherwise = Up
   return $ KeyboardAction name keys newState
 
-handleKeyboardActionKeyPressed :: [Int] -> IO Bool
+handleKeyboardActionKeyPressed :: [KeyboardKey] -> IO Bool
 handleKeyboardActionKeyPressed [] = return False
 handleKeyboardActionKeyPressed [key] = liftIO $ isKeyPressed key
 handleKeyboardActionKeyPressed (key : keys) = do
@@ -59,7 +75,7 @@ handleKeyboardActionKeyPressed (key : keys) = do
   nextKeys <- liftIO $ handleKeyboardActionKeyPressed keys
   return (thisKey || nextKeys)
 
-handleKeyboardActionKeyDown :: [Int] -> IO Bool
+handleKeyboardActionKeyDown :: [KeyboardKey] -> IO Bool
 handleKeyboardActionKeyDown [] = return False
 handleKeyboardActionKeyDown [key] = liftIO $ isKeyDown key
 handleKeyboardActionKeyDown (key : keys) = do
@@ -67,7 +83,7 @@ handleKeyboardActionKeyDown (key : keys) = do
   nextKeys <- liftIO $ handleKeyboardActionKeyDown keys
   return (thisKey || nextKeys)
 
-handleKeyboardActionKeyReleased :: [Int] -> IO Bool
+handleKeyboardActionKeyReleased :: [KeyboardKey] -> IO Bool
 handleKeyboardActionKeyReleased [] = return False
 handleKeyboardActionKeyReleased [key] = liftIO $ isKeyReleased key
 handleKeyboardActionKeyReleased (key : keys) = do
@@ -75,7 +91,7 @@ handleKeyboardActionKeyReleased (key : keys) = do
   nextKeys <- liftIO $ handleKeyboardActionKeyReleased keys
   return (thisKey || nextKeys)
 
-handleKeyboardActionKeyUp :: [Int] -> IO Bool
+handleKeyboardActionKeyUp :: [KeyboardKey] -> IO Bool
 handleKeyboardActionKeyUp [] = return False
 handleKeyboardActionKeyUp [key] = liftIO $ isKeyUp key
 handleKeyboardActionKeyUp (key : keys) = do
@@ -140,35 +156,35 @@ handleMouseAction action@(MouseAction name keys state) = do
         | otherwise = Up
   return $ MouseAction name keys newState
 
-handleMouseActionKeyPressed :: [Int] -> IO Bool
+handleMouseActionKeyPressed :: [MouseButton] -> IO Bool
 handleMouseActionKeyPressed [] = return False
 handleMouseActionKeyPressed [key] = liftIO $ isMouseButtonPressed key
 handleMouseActionKeyPressed (key : keys) = do
-  thisKey <- liftIO $ isKeyPressed key
+  thisKey <- liftIO $ isMouseButtonPressed key
   nextKeys <- liftIO $ handleMouseActionKeyPressed keys
   return (thisKey || nextKeys)
 
-handleMouseActionKeyDown :: [Int] -> IO Bool
+handleMouseActionKeyDown :: [MouseButton] -> IO Bool
 handleMouseActionKeyDown [] = return False
 handleMouseActionKeyDown [key] = liftIO $ isMouseButtonDown key
 handleMouseActionKeyDown (key : keys) = do
-  thisKey <- liftIO $ isKeyDown key
+  thisKey <- liftIO $ isMouseButtonDown key
   nextKeys <- liftIO $ handleMouseActionKeyDown keys
   return (thisKey || nextKeys)
 
-handleMouseActionKeyReleased :: [Int] -> IO Bool
+handleMouseActionKeyReleased :: [MouseButton] -> IO Bool
 handleMouseActionKeyReleased [] = return False
 handleMouseActionKeyReleased [key] = liftIO $ isMouseButtonReleased key
 handleMouseActionKeyReleased (key : keys) = do
-  thisKey <- liftIO $ isKeyReleased key
+  thisKey <- liftIO $ isMouseButtonReleased key
   nextKeys <- liftIO $ handleMouseActionKeyReleased keys
   return (thisKey || nextKeys)
 
-handleMouseActionKeyUp :: [Int] -> IO Bool
+handleMouseActionKeyUp :: [MouseButton] -> IO Bool
 handleMouseActionKeyUp [] = return False
 handleMouseActionKeyUp [key] = liftIO $ isMouseButtonUp key
 handleMouseActionKeyUp (key : keys) = do
-  thisKey <- liftIO $ isKeyUp key
+  thisKey <- liftIO $ isMouseButtonUp key
   nextKeys <- liftIO $ handleMouseActionKeyUp keys
   return (thisKey || nextKeys)
 

@@ -4,13 +4,19 @@ module Villager.Hauler where
 
 import Apecs
 import Components
-  ( CollisionBox (..),
+  ( AtlasRegion (..),
+    BodyCollision (..),
+    Collision (..),
+    CollisionBox (..),
+    CollisionType (..),
     IdleInfo (IdleInfo),
+    Position (..),
     Sprite (..),
     System',
+    TriggerCollision (..),
     Villager (..),
     VillagerState (..),
-    VillagerType (..), CollisionType (..), Collision (..),
+    VillagerType (..),
   )
 import Control.Monad (when)
 import Debug.Trace (trace)
@@ -25,11 +31,19 @@ import Villagers (defaultIdleInfo)
 
 newHauler :: Vector2 -> Vector2 -> CollisionType -> System' Entity
 newHauler position@(Vector2 x y) idlePoint colType = do
-  newEntity
-    ( Villager Hauler Idle,
-      defaultIdleInfo idlePoint,
-      Sprite position (Rectangle (6.0 * tileSizeCF) (12.0 * tileSizeCF) tileSizeCF tileSizeCF),
-      ( Collision colType False Nothing False,
-        CollisionBox (Rectangle x y tileSizeCF tileSizeCF)
+  hauler <-
+    newEntity
+      ( Villager Hauler Idle,
+        defaultIdleInfo idlePoint,
+        Position position,
+        Sprite,
+        AtlasRegion (Rectangle (6.0 * tileSizeCF) (12.0 * tileSizeCF) tileSizeCF tileSizeCF),
+        ( Collision False Nothing False,
+          CollisionBox (Rectangle x y tileSizeCF tileSizeCF)
+        )
       )
-    )
+  case colType of
+    Trigger -> set hauler TriggerCollision
+    Body -> set hauler BodyCollision
+
+  return hauler

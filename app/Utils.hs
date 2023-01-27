@@ -85,3 +85,8 @@ isParentVisible child = do
       (Visibility visible) <- get parent
       return visible
     else return True
+
+getAndRemoveItemFromList :: (a -> Bool) -> [a] -> (Maybe a, [a])
+getAndRemoveItemFromList p xs = case break p xs of
+  (ys, z : zs) -> (Just z, ys ++ zs)
+  (ys, []) -> (Nothing, ys)

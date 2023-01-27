@@ -1,26 +1,40 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+
 module Villagers where
 
-import Apecs 
-import Raylib
-import Components (System', Sprite (..), CollisionBox (..), IdleInfo (..), Villager (..))
-import Raylib.Types (Vector2(..), Rectangle (..))
-import Foreign.C (CFloat(..))
+import Apecs
+import Components
+  ( CollisionBox (..),
+    IdleInfo (..),
+    Position (..),
+    Sprite (..),
+    System',
+    Villager (..),
+  )
 import Control.Monad (when)
-import Utils
+import Foreign.C (CFloat (..))
+import Raylib
+import Raylib.Types (Rectangle (..), Vector2 (..))
 import System.Random (randomRIO)
+import Utils
+  ( normalizeVector,
+    vectorLength,
+    (|*#|),
+    (|+|),
+    (|-|),
+  )
 
 defaultIdleInfo :: Vector2 -> IdleInfo
 defaultIdleInfo position = IdleInfo position 0.0 (3.0, 5.0) 20.0 (Vector2 0.0 0.0)
 
 updateVillagerCollision :: System' ()
 updateVillagerCollision =
-  cmapM_ $ \(Villager _ _, Sprite (Vector2 x y) _, CollisionBox (Rectangle rx ry rw rh), ety) -> do
+  cmapM_ $ \(Villager _ _, Sprite, Position (Vector2 x y), CollisionBox (Rectangle rx ry rw rh), ety) -> do
     set ety $ CollisionBox (Rectangle x y rw rh)
 
 updateVillagerIdleState :: System' ()
 updateVillagerIdleState =
-  cmapM_ $ \(Villager _ _, idleInfo@(IdleInfo idlePos timer range radius target), sprite@(Sprite pos rect), ety :: Entity) -> do
+  cmapM_ $ \(Villager _ _, idleInfo@(IdleInfo idlePos timer range radius target), Position pos, ety :: Entity) -> do
     delta <- liftIO $ CFloat <$> getFrameTime
     let newTimer = updateIdleTick timer delta
     set ety (IdleInfo idlePos newTimer range radius target)
@@ -29,7 +43,7 @@ updateVillagerIdleState =
       set ety newIdleInfo
     let hasNotArrived = vectorLength (target |-| pos) > 1.0
     when (vectorLength (target |-| pos) > 1.0) $ do
-      set ety (Sprite (moveVillager target pos delta) rect)
+      set ety (Position (moveVillager target pos delta))
 
 updateIdleTick :: CFloat -> CFloat -> CFloat
 updateIdleTick timer delta =
