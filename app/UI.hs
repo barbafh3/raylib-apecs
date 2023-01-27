@@ -15,7 +15,8 @@ import Apecs
 import Building.Warehouse (addItemToStorage)
 import Collisions (toggleDrawCollision)
 import Components
-  ( ButtonAction (..),
+  ( AtlasRegion (..),
+    ButtonAction (..),
     ButtonState (..),
     CameraComponent (..),
     DrawBuildingPanel (DrawBuildingPanel),
@@ -71,7 +72,6 @@ import Raylib
     measureText,
   )
 import Raylib.Colors (black, white)
-import Raylib.Constants (mouseButton'left)
 import Raylib.Types (Camera2D (..), Color, Rectangle (..), Texture, Vector2 (..))
 import Tilemap (tileSizeCF)
 import Utils (isParentVisible, isPointInsideBox, mergeMaps, (|+|))
@@ -90,8 +90,8 @@ toggleDrawResourcePanel = cmap $ \(ResourcePanel, Visibility visible) -> Visibil
 toggleDrawBuildingPanel :: System' ()
 toggleDrawBuildingPanel = cmap $ \(DrawBuildingPanel enabled) -> DrawBuildingPanel (not enabled)
 
-uiStartup :: System' ()
-uiStartup = do
+testMapUiStartup :: System' ()
+testMapUiStartup = do
   (CameraComponent _ (Camera2D _ _ _ zoom)) <- get global
 
   set global $ DrawResourcePanel False
@@ -99,9 +99,10 @@ uiStartup = do
 
   screenHeight <- liftIO getScreenHeight
   let screenHeightCF = CFloat $ int2Float screenHeight
-  newToggleTextureButton (Vector2 10.0 $ screenHeightCF - 10.0) 0 (Vector2 0.0 0.0) ToggleDrawCollisionAction
-  newToggleTextureButton (Vector2 50.0 $ screenHeightCF - 10.0) 0 (Vector2 3.0 0.0) ToggleFPSAction
-  newToggleTextureButton (Vector2 90.0 $ screenHeightCF - 10.0) 0 (Vector2 0.0 2.0) ToggleResourcePanel
+  newToggleTextureButton (Vector2 10.0 $ screenHeightCF - 10.0) 0 (Vector2 0.0 0.0) Nothing ToggleDrawCollisionAction
+  newToggleTextureButton (Vector2 50.0 $ screenHeightCF - 10.0) 0 (Vector2 3.0 0.0) Nothing ToggleFPSAction
+  newToggleTextureButton (Vector2 90.0 $ screenHeightCF - 10.0) 0 (Vector2 0.0 2.0) Nothing ToggleResourcePanel
+  newToggleTextureButton (Vector2 130.0 $ screenHeightCF - 10.0) 0 (Vector2 6.0 1.0) Nothing ToggleBuildingPanel
 
   resourcePanel <- newEntity (ResourcePanel, Visibility False)
 
@@ -193,7 +194,8 @@ drawUITextureButtons = do
   (GameAtlasSets _ uiAtlas) <- get global
   (CameraComponent _ (Camera2D _ _ _ zoom)) <- get global
   cmapM_ $
-    \( TextureButton (Rectangle rx ry rw rh) state _,
+    \( TextureButton state _,
+       AtlasRegion (Rectangle rx ry rw rh),
        UIElement,
        Position pos@(Vector2 ex ey),
        Scale scale,
@@ -203,12 +205,12 @@ drawUITextureButtons = do
         parentVisible <- isParentVisible ety
         when (visible && parentVisible) $ do
           let newRX = case state of
-                Hovered -> rx + 16.0
-                Held -> rx + 32.0
-                Toggled -> rx + 32.0
+                Hovered -> rx + rw
+                Held -> rx + rw * 2
+                Toggled -> rx + rw * 2
                 _ -> rx
           let src = Rectangle newRX ry rw rh
-          let dest = Rectangle ex (ey - (tileSizeCF * zoom)) (tileSizeCF * scale * zoom) (tileSizeCF * scale * zoom)
+          let dest = Rectangle ex (ey - (rh * zoom)) (rw * scale * zoom) (rh * scale * zoom)
           liftIO $ drawTexturePro uiAtlas src dest (Vector2 0.0 0.0) 0.0 white
 
 drawImages :: System' ()
@@ -249,16 +251,64 @@ newLabel text pos offset layer fontSize spacing color = do
   let label = Label text fontSize spacing color
   newEntity (UIElement, Position pos, Offset offset, Scale 1.0, Layer layer, Visibility True, label)
 
-newTextureButton :: Vector2 -> CInt -> Vector2 -> ButtonAction -> System' ()
-newTextureButton pos layer (Vector2 vx vy) action = do
-  let button = TextureButton (Rectangle (vx * tileSizeCF) (vy * tileSizeCF) tileSizeCF tileSizeCF) Normal action
-  newEntity (UIElement, Position pos, Offset (Vector2 0.0 0.0), Scale 1.0, Layer layer, Visibility True, button)
+newTextureButton :: Vector2 -> CInt -> Vector2 -> Maybe Vector2 -> ButtonAction -> System' ()
+newTextureButton pos layer (Vector2 vx vy) (Just (Vector2 sx sy)) action = do
+  let region = AtlasRegion (Rectangle (vx * tileSizeCF) (vy * tileSizeCF) sx sy)
+  newEntity
+    ( UIElement,
+      Position pos,
+      Offset (Vector2 0.0 0.0),
+      Scale 1.0,
+      Layer layer,
+      Visibility True,
+      TextureButton Normal action,
+      region
+    )
+  return ()
+newTextureButton pos layer (Vector2 vx vy) Nothing action = do
+  let region = AtlasRegion (Rectangle (vx * tileSizeCF) (vy * tileSizeCF) tileSizeCF tileSizeCF)
+  newEntity
+    ( UIElement,
+      Position pos,
+      Offset (Vector2 0.0 0.0),
+      Scale 1.0,
+      Layer layer,
+      Visibility True,
+      TextureButton Normal action,
+      region
+    )
   return ()
 
-newToggleTextureButton :: Vector2 -> CInt -> Vector2 -> ButtonAction -> System' ()
-newToggleTextureButton pos layer (Vector2 vx vy) action = do
-  let button = TextureButton (Rectangle (vx * tileSizeCF) (vy * tileSizeCF) tileSizeCF tileSizeCF) Normal action
-  newEntity (UIElement, Position pos, Offset (Vector2 0.0 0.0), Scale 1.0, Layer layer, Visibility True, button, ToggleButton)
+newToggleTextureButton :: Vector2 -> CInt -> Vector2 -> Maybe Vector2 -> ButtonAction -> System' ()
+newToggleTextureButton pos layer (Vector2 vx vy) Nothing action = do
+  let region = AtlasRegion (Rectangle (vx * tileSizeCF) (vy * tileSizeCF) tileSizeCF tileSizeCF)
+  newEntity
+    ( UIElement,
+      Position pos,
+      Offset (Vector2 0.0 0.0),
+      Scale 1.0,
+      Layer layer,
+      Visibility True,
+      ( TextureButton Normal action,
+        region,
+        ToggleButton
+      )
+    )
+  return ()
+newToggleTextureButton pos layer (Vector2 vx vy) (Just (Vector2 sx sy)) action = do
+  let region = AtlasRegion (Rectangle (vx * tileSizeCF) (vy * tileSizeCF) sx sy)
+  newEntity
+    ( UIElement,
+      Position pos,
+      Offset (Vector2 0.0 0.0),
+      Scale 1.0,
+      Layer layer,
+      Visibility True,
+      ( TextureButton Normal action,
+        region,
+        ToggleButton
+      )
+    )
   return ()
 
 getButtonAction :: ButtonAction -> Maybe (ButtonAction, System' ())
@@ -295,32 +345,32 @@ updateGlobalStoneBrickLabel = do
 checkButtonClick :: System' ()
 checkButtonClick = do
   (CameraComponent _ (Camera2D _ _ _ zoom)) <- get global
-  cmapM_ $ \(TextureButton rect state action, UIElement, Position (Vector2 ex ey), Not :: Not ToggleButton, ety) -> do
+  cmapM_ $ \(TextureButton state action, AtlasRegion (Rectangle rx ry rw rh), UIElement, Position (Vector2 ex ey), Not :: Not ToggleButton, ety) -> do
     mousePos <- liftIO getMousePosition
-    let buttonBox = Rectangle ex (ey - (tileSizeCF * zoom)) (tileSizeCF * zoom) (tileSizeCF * zoom)
+    let buttonBox = Rectangle ex (ey - (rh * zoom)) (rw * zoom) (rh * zoom)
     leftMouseDown <- isMouseActionDown LeftClick
     leftMouseReleased <- isMouseActionReleased LeftClick
     if isPointInsideBox mousePos buttonBox
       then do
-        set ety $ TextureButton rect Hovered action
-        when leftMouseDown $ set ety $ TextureButton rect Held action
+        set ety $ TextureButton Hovered action
+        when leftMouseDown $ set ety $ TextureButton Held action
         when leftMouseReleased $ forM_ (getButtonAction action) snd
-      else set ety $ TextureButton rect Normal action
+      else set ety $ TextureButton Normal action
 
-  cmapM_ $ \(TextureButton rect state action, UIElement, Position (Vector2 ex ey), ToggleButton, ety) -> do
+  cmapM_ $ \(TextureButton state action, AtlasRegion (Rectangle rx ry rw rh), UIElement, Position (Vector2 ex ey), ToggleButton, ety) -> do
     mousePos <- liftIO getMousePosition
-    let buttonBox = Rectangle ex (ey - (tileSizeCF * zoom)) (tileSizeCF * zoom) (tileSizeCF * zoom)
+    let buttonBox = Rectangle ex (ey - (rh * zoom)) (rw * zoom) (rh * zoom)
     leftMouseReleased <- isMouseActionReleased LeftClick
     if isPointInsideBox mousePos buttonBox
       then do
         if leftMouseReleased
           then do
             if state == Toggled
-              then set ety $ TextureButton rect Hovered action
-              else set ety $ TextureButton rect Toggled action
+              then set ety $ TextureButton Hovered action
+              else set ety $ TextureButton Toggled action
             forM_ (getButtonAction action) snd
-          else when (state /= Toggled) $ set ety $ TextureButton rect Hovered action
-      else when (state /= Toggled) $ set ety $ TextureButton rect Normal action
+          else when (state /= Toggled) $ set ety $ TextureButton Hovered action
+      else when (state /= Toggled) $ set ety $ TextureButton Normal action
 
 toggleFPS :: System' ()
 toggleFPS = cmap $ \(ShowFPS showFPS) -> ShowFPS (not showFPS)

@@ -3,23 +3,37 @@ module Update where
 import Apecs
 import Building.Warehouse (addItemToStorage)
 import Collisions (detectCollisions)
-import Components (CameraComponent (..), GlobalStorageList (..), InputList (..), KeyboardActionName (..), StorageSpace (..), System')
+import Components (CameraComponent (..), GlobalStorageList (..), InputList (..), KeyboardActionName (..), Scene (..), StorageSpace (..), System')
 import Control.Monad (when)
 import Data.HashMap
 import qualified Data.HashMap as Map
 import Input (isKeyboardActionDown, isKeyboardActionReleased, isMouseActionReleased)
 import Raylib.Types (Camera2D (..), Vector2 (..))
+import Tasks (updateTasks)
 import Tilemap (checkVisibleTilemapChunks)
 import UI (updateUI)
 import Utils (mergeMaps)
 import Villagers (updateVillagerCollision, updateVillagerIdleState)
 
-updateGame :: System' ()
-updateGame = do
+updateGame :: Scene -> System' ()
+updateGame scene
+  | scene == MainMenu = updateMainMenu
+  | scene == TestMap = updateTestmap
+
+updateMainMenu :: System' ()
+updateMainMenu = do
+  detectCollisions
+
+  updateUI
+
+updateTestmap :: System' ()
+updateTestmap = do
   checkVisibleTilemapChunks
 
   checkAddStone
   updateGlobalStorage
+
+  updateTasks
 
   updateVillagerIdleState
   updateVillagerCollision

@@ -2,14 +2,16 @@ module Building.Warehouse where
 
 import Apecs
 import Components
-  ( Collision (Collision),
+  ( AtlasRegion (..),
+    Collision (Collision),
     CollisionBox (CollisionBox),
-    CollisionType (Trigger),
+    Position (..),
     ResourceStorage,
     Sprite (Sprite),
     StorageItem,
     StorageSpace (StorageSpace),
     System',
+    TriggerCollision (..),
   )
 import Data.HashMap (empty, fromList, insert)
 import Raylib.Types (Rectangle (..), Vector2 (..))
@@ -19,8 +21,11 @@ newWarehouse :: Vector2 -> Maybe ResourceStorage -> System' Entity
 newWarehouse position@(Vector2 x y) mStartStorage = do
   warehouse <-
     newEntity
-      ( Sprite position (Rectangle (6.0 * tileSizeCF) (4.0 * tileSizeCF) tileSizeCF tileSizeCF),
-        ( Collision Trigger False Nothing False,
+      ( Sprite,
+        AtlasRegion (Rectangle (6.0 * tileSizeCF) (4.0 * tileSizeCF) tileSizeCF tileSizeCF),
+        Position position,
+        ( Collision False Nothing False,
+          TriggerCollision,
           CollisionBox (Rectangle x y tileSizeCF tileSizeCF)
         )
       )
