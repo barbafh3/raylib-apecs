@@ -16,7 +16,7 @@ where
 
 import Apecs
 import Components
-import Raylib
+import Raylib.Core
 import Raylib.Types (Camera2D (..), KeyboardKey (..), MouseButton (MouseButtonLeft, MouseButtonRight), Vector2 (..))
 
 gameKeyboardActions :: [KeyboardAction]

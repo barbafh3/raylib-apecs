@@ -22,47 +22,38 @@ import GHC.Base (when)
 import GHC.Float (int2Float)
 import Input
 import Linear (V2 (..))
-import Raylib
-  ( beginDrawing,
-    clearBackground,
-    closeWindow,
-    drawCircle,
-    drawText,
-    drawTextEx,
-    endDrawing,
-    initWindow,
-    isKeyDown,
-    isKeyPressed,
-    isKeyReleased,
-    isKeyUp,
-    loadFont,
-    loadTexture,
-    setTargetFPS,
-    windowShouldClose,
-  )
-import Raylib.Colors (black, rayWhite, white)
+import Raylib.Core (beginDrawing, clearBackground, closeWindow, endDrawing, initWindow, setTargetFPS, windowShouldClose)
 import Raylib.Types (Camera2D (..), Font, Rectangle (..), Texture, Vector2 (..))
+import Raylib.Util (WindowResources, whileWindowOpen, whileWindowOpen0, whileWindowOpen_, withWindow)
+import Raylib.Util.Colors (rayWhite)
 import Startup (gameStartup)
-import Tilemap (generateTilemap, tileSizeCF)
+import Tilemap (generateTilemap)
 import UI (newLabel)
 import Update (updateGame)
 import Villager.Hauler (newHauler)
 
+-- main :: IO ()
+-- main = initWorld' >>= runSystem initializeGame
+
 main :: IO ()
-main = initWorld' >>= runSystem initializeGame
+main = do
+  withWindow
+    screenWidth
+    screenHeight
+    "Protobuilder"
+    75
+    ( \window -> do
+        initWorld' >>= runSystem (initializeGame window)
+    )
 
-initializeGame :: System' ()
-initializeGame = do
-  liftIO $ do
-    initWindow screenWidth screenHeight "Protobuilder"
-    setTargetFPS 75
+initializeGame :: WindowResources -> System' ()
+initializeGame window = do
+  gameStartup window
+  whileWindowOpen0 gameLoop
+  liftIO $ closeWindow window
 
-  mainFont <- gameStartup
-  gameLoop mainFont
-  liftIO closeWindow
-
-gameLoop :: Font -> System' ()
-gameLoop mainFont = do
+gameLoop :: System' ()
+gameLoop = do
   handleInput
 
   (ActiveScene scene) <- get global
@@ -75,6 +66,3 @@ gameLoop mainFont = do
   drawGame
 
   liftIO endDrawing
-
-  shouldClose <- liftIO windowShouldClose
-  unless shouldClose $ gameLoop mainFont

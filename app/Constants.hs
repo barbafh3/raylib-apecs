@@ -14,6 +14,12 @@ screenWidth = 1280
 screenHeight :: Int
 screenHeight = 720
 
+screenWidthF :: Float
+screenWidthF = int2Float screenWidth
+
+screenHeightF :: Float
+screenHeightF = int2Float screenHeight
+
 screenWidthCF :: CFloat
 screenWidthCF = CFloat $ int2Float screenWidth
 

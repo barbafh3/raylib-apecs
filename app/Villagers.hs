@@ -13,7 +13,7 @@ import Components
   )
 import Control.Monad (when)
 import Foreign.C (CFloat (..))
-import Raylib
+import Raylib.Core (getFrameTime)
 import Raylib.Types (Rectangle (..), Vector2 (..))
 import System.Random (randomRIO)
 import Utils
@@ -35,7 +35,7 @@ updateVillagerCollision =
 updateVillagerIdleState :: System' ()
 updateVillagerIdleState =
   cmapM_ $ \(Villager _ _, idleInfo@(IdleInfo idlePos timer range radius target), Position pos, ety :: Entity) -> do
-    delta <- liftIO $ CFloat <$> getFrameTime
+    delta <- liftIO getFrameTime
     let newTimer = updateIdleTick timer delta
     set ety (IdleInfo idlePos newTimer range radius target)
     when (newTimer <= 0.0) $ do
@@ -45,7 +45,7 @@ updateVillagerIdleState =
     when (vectorLength (target |-| pos) > 1.0) $ do
       set ety (Position (moveVillager target pos delta))
 
-updateIdleTick :: CFloat -> CFloat -> CFloat
+updateIdleTick :: Float -> Float -> Float
 updateIdleTick timer delta =
   if timer > 0.0
     then timer - delta
@@ -58,7 +58,7 @@ getNewTarget (IdleInfo pos@(Vector2 x y) _ range@(s, e) radius target) = do
   newTimer <- randomRIO (s, e)
   return $ IdleInfo pos newTimer range radius (Vector2 randX randY)
 
-moveVillager :: Vector2 -> Vector2 -> CFloat -> Vector2
+moveVillager :: Vector2 -> Vector2 -> Float -> Vector2
 moveVillager target pos delta = newPos
   where
     direction = target |-| pos

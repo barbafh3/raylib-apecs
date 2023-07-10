@@ -13,18 +13,20 @@ import Raylib.Types (Rectangle (..), Vector2 (..))
 permutate :: [a] -> [a] -> [(a, a)]
 permutate l1 l2 = (,) <$> l1 <*> l2
 
-sumV2 :: Vector2 -> CFloat
+-- sumV2 :: Vector2 -> CFloat
+sumV2 :: Vector2 -> Float
 sumV2 (Vector2 x y) = x + y
 
 -- | Elevate to exponent
-(|**|) :: Vector2 -> CFloat -> Vector2
+(|**|) :: Vector2 -> Float -> Vector2
 (Vector2 x y) |**| exponent = Vector2 (x ** exponent) (y ** exponent)
 
 -- | Adds a Vector2 with another Vector2
 (|+|) :: Vector2 -> Vector2 -> Vector2
 (Vector2 x1 y1) |+| (Vector2 x2 y2) = Vector2 (x1 + x2) (y1 + y2)
 
-(|+#|) :: Vector2 -> CFloat -> Vector2
+-- (|+#|) :: Vector2 -> CFloat -> Vector2
+(|+#|) :: Vector2 -> Float -> Vector2
 (Vector2 x y) |+#| factor = Vector2 (x + factor) (y + factor)
 
 -- | Subtract a Vector2 from another Vector2
@@ -32,7 +34,8 @@ sumV2 (Vector2 x y) = x + y
 (Vector2 x1 y1) |-| (Vector2 x2 y2) = Vector2 (x1 - x2) (y1 - y2)
 
 -- | Subtract a factor from a Vector2
-(|-#|) :: Vector2 -> CFloat -> Vector2
+-- (|-#|) :: Vector2 -> CFloat -> Vector2
+(|-#|) :: Vector2 -> Float -> Vector2
 (Vector2 x y) |-#| factor = Vector2 (x - factor) (y - factor)
 
 -- | Divide a Vector2 by another Vector2
@@ -40,7 +43,8 @@ sumV2 (Vector2 x y) = x + y
 (Vector2 x1 y1) |/| (Vector2 x2 y2) = Vector2 (x1 / x2) (y1 / y2)
 
 -- | Divide a Vector2 by a factor
-(|/#|) :: Vector2 -> CFloat -> Vector2
+-- (|/#|) :: Vector2 -> CFloat -> Vector2
+(|/#|) :: Vector2 -> Float -> Vector2
 (Vector2 x y) |/#| factor = Vector2 (x / factor) (y / factor)
 
 -- | Multiply a Vector2 by another Vector2
@@ -48,10 +52,13 @@ sumV2 (Vector2 x y) = x + y
 (Vector2 x1 y1) |*| (Vector2 x2 y2) = Vector2 (x1 * x2) (y1 * y2)
 
 -- | Multiply a Vector2 by a factor
-(|*#|) :: Vector2 -> CFloat -> Vector2
-(Vector2 x y) |*#| factor = Vector2 (x * factor :: CFloat) (y * factor)
+-- (|*#|) :: Vector2 -> CFloat -> Vector2
+(|*#|) :: Vector2 -> Float -> Vector2
+-- (Vector2 x y) |*#| factor = Vector2 (x * factor :: CFloat) (y * factor)
+(Vector2 x y) |*#| factor = Vector2 (x * factor) (y * factor)
 
-vectorLength :: Vector2 -> CFloat
+-- vectorLength :: Vector2 -> CFloat
+vectorLength :: Vector2 -> Float
 vectorLength (Vector2 x y) = sqrt . sumV2 $ Vector2 (x ** 2) (y ** 2)
 
 normalizeVector :: Vector2 -> Vector2

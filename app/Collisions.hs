@@ -16,7 +16,7 @@ import Components
   )
 import Control.Monad (unless, when)
 import Foreign.C (CInt (..))
-import Raylib (drawRectangle)
+import Raylib.Core.Shapes (drawRectangle)
 import Raylib.Types (Color (..), Rectangle (..))
 import Tilemap (tileSize)
 import Utils (areBoxesColliding)

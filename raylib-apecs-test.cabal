@@ -50,12 +50,9 @@ executable raylib-apecs-test
                      ,template-haskell
                      ,hashmap
                      ,hashable
-                     ,dear-imgui
                      ,sdl2
     hs-source-dirs:   app
     default-language: Haskell2010
 
     package h-raylib
       flags: +detect-platform
-    package dear-imgui
-      flags: +sdl +opengl3

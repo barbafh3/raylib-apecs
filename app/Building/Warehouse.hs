@@ -15,18 +15,24 @@ import Components
   )
 import Data.HashMap (empty, fromList, insert)
 import Raylib.Types (Rectangle (..), Vector2 (..))
-import Tilemap (tileSizeCF)
+import Tilemap (tileSizeF)
 
 newWarehouse :: Vector2 -> Maybe ResourceStorage -> System' Entity
 newWarehouse position@(Vector2 x y) mStartStorage = do
   warehouse <-
     newEntity
       ( Sprite,
-        AtlasRegion (Rectangle (6.0 * tileSizeCF) (4.0 * tileSizeCF) tileSizeCF tileSizeCF),
+        -- AtlasRegion (Rectangle (6.0 * tileSizeCF) (4.0 * tileSizeCF) tileSizeCF tileSizeCF),
+        -- Position position,
+        -- ( Collision False Nothing False,
+        --   TriggerCollision,
+        --   CollisionBox (Rectangle x y tileSizeCF tileSizeCF)
+        -- )
+        AtlasRegion (Rectangle (6.0 * tileSizeF) (4.0 * tileSizeF) tileSizeF tileSizeF),
         Position position,
         ( Collision False Nothing False,
           TriggerCollision,
-          CollisionBox (Rectangle x y tileSizeCF tileSizeCF)
+          CollisionBox (Rectangle x y tileSizeF tileSizeF)
         )
       )
 

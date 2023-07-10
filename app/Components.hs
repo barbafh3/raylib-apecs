@@ -31,7 +31,7 @@ import Raylib.Types
     Vector2,
   )
 
-type RangeF = (CFloat, CFloat)
+type RangeF = (Float, Float)
 
 -- ------------------------------------------------------------------------------------------ DEBUG
 newtype ShowFPS = ShowFPS Bool deriving (Show)
@@ -47,13 +47,13 @@ newtype Offset = Offset Vector2 deriving (Show)
 
 newtype Layer = Layer CInt deriving (Show)
 
-newtype Scale = Scale CFloat deriving (Show)
+newtype Scale = Scale Float deriving (Show)
 
 newtype Visibility = Visibility Bool deriving (Show)
 
 newtype AtlasRegion = AtlasRegion Rectangle deriving (Show)
 
-data CameraComponent = CameraComponent CFloat Camera2D deriving (Show)
+data CameraComponent = CameraComponent Float Camera2D deriving (Show)
 
 newtype FontsComponent = FontsComponent Font deriving (Show)
 
@@ -150,9 +150,9 @@ data Villager = Villager VillagerType VillagerState deriving (Show)
 
 data IdleInfo = IdleInfo
   { idlePosition :: Vector2,
-    idleTimer :: CFloat,
+    idleTimer :: Float,
     idleTimerRange :: RangeF,
-    idleRadius :: CFloat,
+    idleRadius :: Float,
     idleTargetPosition :: Vector2
   }
   deriving (Show)

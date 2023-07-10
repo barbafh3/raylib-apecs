@@ -13,10 +13,11 @@ import Components
     Tile (..),
     Tilemap (..),
   )
-import Raylib
-import Raylib.Colors (black, lightGray, white)
+import Raylib.Core (beginMode2D, endMode2D)
+import Raylib.Core.Textures (drawTextureRec)
 import Raylib.Types
-import Tilemap (drawTilemap, tileSize, tileSizeCF)
+import Raylib.Util.Colors (white)
+import Tilemap (drawTilemap, tileSize)
 import UI (drawUI)
 
 drawGame :: System' ()

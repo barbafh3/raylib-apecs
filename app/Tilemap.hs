@@ -7,9 +7,10 @@ import Data.Ratio ((%))
 import Foreign.C
 import Foreign.C.Types (CFloat)
 import GHC.Float (int2Float)
-import Raylib (drawTextureRec, getScreenHeight, getScreenWidth)
-import Raylib.Colors (white)
+import Raylib.Core (getScreenHeight, getScreenWidth)
+import Raylib.Core.Textures (drawTextureRec)
 import Raylib.Types (Camera2D (..), Rectangle (..), Texture, Vector2 (..))
+import Raylib.Util.Colors (white)
 import System.Random (initStdGen, newStdGen, randomIO, randomRIO, uniformR)
 import Utils (areBoxesColliding, permutate)
 
@@ -18,9 +19,12 @@ tileSize = 16
 chunkTileSize = 16
 chunkRawSize = tileSize * chunkTileSize
 
-tileSizeCF, chunkRawSizeCF :: CFloat
-tileSizeCF = CFloat $ int2Float tileSize
-chunkRawSizeCF = CFloat $ int2Float chunkRawSize
+tileSizeF :: Float
+tileSizeF = int2Float tileSize
+
+chunkTileSizeF = int2Float chunkTileSize
+
+chunkRawSizeF = int2Float chunkRawSize
 
 -- tileSizeCI, chunkRawSizeCI :: CInt
 -- tileSizeCI = int2 tileSize
@@ -41,36 +45,33 @@ generateChunk coord@(originX, originY) = do
   let worldStartY = originY * chunkTileSize
   let worldEndX = worldStartX + chunkTileSize
   let worldEndY = worldStartY + chunkTileSize
-  let rect = Rectangle (CFloat $ int2Float worldStartX) (CFloat $ int2Float worldStartY) chunkRawSizeCF chunkRawSizeCF
+  let rect = Rectangle (int2Float worldStartX) (int2Float worldStartY) chunkRawSizeF chunkRawSizeF
   tiles <- mapM createTile (permutate [worldStartX .. worldEndX - 1] [worldStartY .. worldEndY - 1])
   return $ Chunk rect tiles False
 
 createTile :: (Int, Int) -> IO Tile
 createTile (x, y) = do
-  -- This line is used to change the tile to a wierd one so the borders of the chunks are visible
-  -- value <- if x /= 0 && y /= 0 && mod x 16 == 0 && mod y 16 == 0 then return 4 else randomRIO (0, 3 :: Int)
   value <- randomRIO (0, 3 :: Int)
-  let rx = CFloat $ int2Float (value * tileSize)
-  let coord = Vector2 (CFloat $ int2Float x) (CFloat $ int2Float y)
-  let rect = Rectangle rx 0.0 tileSizeCF tileSizeCF
+  let rx = int2Float (value * tileSize)
+  let coord = Vector2 (int2Float x) (int2Float y)
+  let rect = Rectangle rx 0.0 tileSizeF tileSizeF
   return $ Tile coord rect
 
 checkVisibleTilemapChunks :: System' ()
 checkVisibleTilemapChunks = do
-  (CameraComponent _ (Camera2D _ (Vector2 tx ty)  _ zoom)) <- get global
+  (CameraComponent _ (Camera2D _ (Vector2 tx ty) _ zoom)) <- get global
   cmapM $ \(Tilemap chunks, tilemap) -> do
     screenWidth <- liftIO getScreenWidth
     screenHeight <- liftIO getScreenHeight
-    let cw = CFloat $ int2Float screenWidth
-    let ch = CFloat $ int2Float screenHeight
-    -- let rect = Rectangle (tx / zoom) (ty / zoom) cw ch
-    let rect = Rectangle (tx - 16) (ty - 16) cw ch 
+    let cw = int2Float screenWidth
+    let ch = int2Float screenHeight
+    let rect = Rectangle (tx - 16) (ty - 16) cw ch
     newChunks <- mapM (checkChunkVisibility rect) chunks
     set tilemap $ Tilemap newChunks
 
 checkChunkVisibility :: Rectangle -> Chunk -> System' Chunk
 checkChunkVisibility cameraRect (Chunk rect@(Rectangle rx ry rw rh) tiles visibility) = do
-  let chunkRect = Rectangle (rx * tileSizeCF) (ry * tileSizeCF) chunkRawSizeCF chunkRawSizeCF
+  let chunkRect = Rectangle (rx * tileSizeF) (ry * tileSizeF) chunkRawSizeF chunkRawSizeF
   return $ Chunk rect tiles $ areBoxesColliding chunkRect cameraRect
 
 drawTilemap :: System' ()
@@ -88,7 +89,7 @@ drawChunks tileset (Chunk (Rectangle rx ry rw rh) tiles visible : chunks)
 
 drawTile :: Texture -> Tile -> IO ()
 drawTile tileset (Tile coord@(Vector2 vx vy) (Rectangle rx ry w h)) = do
-  let rect = Rectangle rx ry tileSizeCF tileSizeCF
-  let vector = Vector2 (vx * tileSizeCF) (vy * tileSizeCF)
+  let rect = Rectangle rx ry tileSizeF tileSizeF
+  let vector = Vector2 (vx * tileSizeF) (vy * tileSizeF)
   drawTextureRec tileset rect vector white
   return ()
