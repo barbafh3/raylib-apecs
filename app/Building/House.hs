@@ -17,12 +17,6 @@ newHouse :: Vector2 -> System' Entity
 newHouse position@(Vector2 x y) =
   newEntity
     ( Sprite,
-      -- AtlasRegion (Rectangle (2.0 * tileSizeCF) (1.0 * tileSizeCF) tileSizeCF tileSizeCF),
-      -- Position position,
-      -- ( Collision False Nothing False,
-      --   TriggerCollision,
-      --   CollisionBox (Rectangle x y tileSizeCF tileSizeCF)
-      -- )
       AtlasRegion (Rectangle (2.0 * tileSizeF) (1.0 * tileSizeF) tileSizeF tileSizeF),
       Position position,
       ( Collision False Nothing False,

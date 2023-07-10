@@ -26,10 +26,6 @@ chunkTileSizeF = int2Float chunkTileSize
 
 chunkRawSizeF = int2Float chunkRawSize
 
--- tileSizeCI, chunkRawSizeCI :: CInt
--- tileSizeCI = int2 tileSize
--- chunkRawSizeCI = fi chunkRawSize
-
 generateTilemap :: Int -> Int -> System' ()
 generateTilemap width height = do
   let chunkX = max 1 $ div width chunkTileSize

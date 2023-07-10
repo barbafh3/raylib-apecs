@@ -22,12 +22,6 @@ newWarehouse position@(Vector2 x y) mStartStorage = do
   warehouse <-
     newEntity
       ( Sprite,
-        -- AtlasRegion (Rectangle (6.0 * tileSizeCF) (4.0 * tileSizeCF) tileSizeCF tileSizeCF),
-        -- Position position,
-        -- ( Collision False Nothing False,
-        --   TriggerCollision,
-        --   CollisionBox (Rectangle x y tileSizeCF tileSizeCF)
-        -- )
         AtlasRegion (Rectangle (6.0 * tileSizeF) (4.0 * tileSizeF) tileSizeF tileSizeF),
         Position position,
         ( Collision False Nothing False,

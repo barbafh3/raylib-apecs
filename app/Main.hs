@@ -32,9 +32,6 @@ import UI (newLabel)
 import Update (updateGame)
 import Villager.Hauler (newHauler)
 
--- main :: IO ()
--- main = initWorld' >>= runSystem initializeGame
-
 main :: IO ()
 main = do
   withWindow

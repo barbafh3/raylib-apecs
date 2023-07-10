@@ -79,7 +79,6 @@ testMapEntitySetup = do
   let idlePoint = Vector2 304.0 176.0
 
   -- Flag Sprite at IdlePoint
-  -- _ <- newEntity (Position idlePoint, Sprite, AtlasRegion (Rectangle (2.0 * tileSizeCF) (6.0 * tileSizeCF) tileSizeCF tileSizeCF))
   _ <- newEntity (Position idlePoint, Sprite, AtlasRegion (Rectangle (2.0 * tileSizeF) (6.0 * tileSizeF) tileSizeF tileSizeF))
 
   _ <- newHauler (Vector2 250.0 50.0) idlePoint Trigger

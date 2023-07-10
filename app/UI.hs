@@ -90,10 +90,6 @@ testMapUiStartup = do
 
   screenHeight <- liftIO getScreenHeight
   let screenHeightCF = CFloat $ int2Float screenHeight
-  -- newToggleTextureButton (Vector2 10.0 $ screenHeightCF - 10.0) 0 (Vector2 0.0 0.0) Nothing ToggleDrawCollisionAction
-  -- newToggleTextureButton (Vector2 50.0 $ screenHeightCF - 10.0) 0 (Vector2 3.0 0.0) Nothing ToggleFPSAction
-  -- newToggleTextureButton (Vector2 90.0 $ screenHeightCF - 10.0) 0 (Vector2 0.0 2.0) Nothing ToggleResourcePanel
-  -- newToggleTextureButton (Vector2 130.0 $ screenHeightCF - 10.0) 0 (Vector2 6.0 1.0) Nothing ToggleBuildingPanel
   newToggleTextureButton (Vector2 10.0 $ screenHeightF - 10.0) 0 (Vector2 0.0 0.0) Nothing ToggleDrawCollisionAction
   newToggleTextureButton (Vector2 50.0 $ screenHeightF - 10.0) 0 (Vector2 3.0 0.0) Nothing ToggleFPSAction
   newToggleTextureButton (Vector2 90.0 $ screenHeightF - 10.0) 0 (Vector2 0.0 2.0) Nothing ToggleResourcePanel
@@ -109,11 +105,9 @@ testMapUiStartup = do
         Scale 1.0,
         Layer 0,
         Visibility True,
-        -- UIImage (Rectangle 0.0 (7.0 * tileSizeCF) tileSizeCF tileSizeCF),
         UIImage (Rectangle 0.0 (7.0 * tileSizeF) tileSizeF tileSizeF),
         Parent resourcePanel
       )
-  -- globalWoodLabel <- newLabel "0" (Vector2 (15.0 + tileSizeCF * zoom) 17.0) (Vector2 0.0 0.0) 0 20.0 1.0 black
   globalWoodLabel <- newLabel "0" (Vector2 (15.0 + tileSizeF * zoom) 17.0) (Vector2 0.0 0.0) 0 20.0 1.0 black
   set globalWoodLabel (GlobalWoodLabel, Parent resourcePanel)
 
@@ -125,11 +119,9 @@ testMapUiStartup = do
         Scale 1.0,
         Layer 0,
         Visibility True,
-        -- UIImage (Rectangle (1.0 * tileSizeCF) (7.0 * tileSizeCF) tileSizeCF tileSizeCF),
         UIImage (Rectangle (1.0 * tileSizeF) (7.0 * tileSizeF) tileSizeF tileSizeF),
         Parent resourcePanel
       )
-  -- globalStoneLabel <- newLabel "0" (Vector2 (15.0 + tileSizeCF * zoom) 54.0) (Vector2 0.0 0.0) 0 20.0 1.0 black
   globalStoneLabel <- newLabel "0" (Vector2 (15.0 + tileSizeF * zoom) 54.0) (Vector2 0.0 0.0) 0 20.0 1.0 black
   set globalStoneLabel (GlobalStoneLabel, Parent resourcePanel)
 
@@ -141,11 +133,9 @@ testMapUiStartup = do
         Scale 1.0,
         Layer 0,
         Visibility True,
-        -- UIImage (Rectangle (2.0 * tileSizeCF) (7.0 * tileSizeCF) tileSizeCF tileSizeCF),
         UIImage (Rectangle (2.0 * tileSizeF) (7.0 * tileSizeF) tileSizeF tileSizeF),
         Parent resourcePanel
       )
-  -- globalPlankLabel <- newLabel "0" (Vector2 (15.0 + tileSizeCF * zoom) 91.0) (Vector2 0.0 0.0) 0 20.0 1.0 black
   globalPlankLabel <- newLabel "0" (Vector2 (15.0 + tileSizeF * zoom) 91.0) (Vector2 0.0 0.0) 0 20.0 1.0 black
   set globalPlankLabel (GlobalPlankLabel, Parent resourcePanel)
 
@@ -157,11 +147,9 @@ testMapUiStartup = do
         Scale 1.0,
         Layer 0,
         Visibility True,
-        -- UIImage (Rectangle (3.0 * tileSizeCF) (7.0 * tileSizeCF) tileSizeCF tileSizeCF),
         UIImage (Rectangle (3.0 * tileSizeF) (7.0 * tileSizeF) tileSizeF tileSizeF),
         Parent resourcePanel
       )
-  -- globalStoneBrickLabel <- newLabel "0" (Vector2 (15.0 + tileSizeCF * zoom) 128.0) (Vector2 0.0 0.0) 0 20.0 1.0 black
   globalStoneBrickLabel <- newLabel "0" (Vector2 (15.0 + tileSizeF * zoom) 128.0) (Vector2 0.0 0.0) 0 20.0 1.0 black
   set globalStoneBrickLabel (GlobalStoneBrickLabel, Parent resourcePanel)
 
@@ -225,7 +213,6 @@ drawImages = do
       parentVisible <- isParentVisible ety
       when (visible && parentVisible) $ do
         let src = rect
-        -- let dest = Rectangle ex ey (tileSizeCF * scale * zoom) (tileSizeCF * scale * zoom)
         let dest = Rectangle ex ey (tileSizeF * scale * zoom) (tileSizeF * scale * zoom)
         liftIO $ drawTexturePro uiAtlas src dest (Vector2 0.0 0.0) 0.0 white
 
@@ -257,7 +244,6 @@ newLabel text pos offset layer fontSize spacing color = do
 
 newTextureButton :: Vector2 -> CInt -> Vector2 -> Maybe Vector2 -> ButtonAction -> System' ()
 newTextureButton pos layer (Vector2 vx vy) (Just (Vector2 sx sy)) action = do
-  -- let region = AtlasRegion (Rectangle (vx * tileSizeCF) (vy * tileSizeCF) sx sy)
   let region = AtlasRegion (Rectangle (vx * tileSizeF) (vy * tileSizeF) sx sy)
   newEntity
     ( UIElement,
@@ -271,7 +257,6 @@ newTextureButton pos layer (Vector2 vx vy) (Just (Vector2 sx sy)) action = do
     )
   return ()
 newTextureButton pos layer (Vector2 vx vy) Nothing action = do
-  -- let region = AtlasRegion (Rectangle (vx * tileSizeCF) (vy * tileSizeCF) tileSizeCF tileSizeCF)
   let region = AtlasRegion (Rectangle (vx * tileSizeF) (vy * tileSizeF) tileSizeF tileSizeF)
   newEntity
     ( UIElement,
@@ -287,7 +272,6 @@ newTextureButton pos layer (Vector2 vx vy) Nothing action = do
 
 newToggleTextureButton :: Vector2 -> CInt -> Vector2 -> Maybe Vector2 -> ButtonAction -> System' ()
 newToggleTextureButton pos layer (Vector2 vx vy) Nothing action = do
-  -- let region = AtlasRegion (Rectangle (vx * tileSizeCF) (vy * tileSizeCF) tileSizeCF tileSizeCF)
   let region = AtlasRegion (Rectangle (vx * tileSizeF) (vy * tileSizeF) tileSizeF tileSizeF)
   newEntity
     ( UIElement,
@@ -303,7 +287,6 @@ newToggleTextureButton pos layer (Vector2 vx vy) Nothing action = do
     )
   return ()
 newToggleTextureButton pos layer (Vector2 vx vy) (Just (Vector2 sx sy)) action = do
-  -- let region = AtlasRegion (Rectangle (vx * tileSizeCF) (vy * tileSizeCF) sx sy)
   let region = AtlasRegion (Rectangle (vx * tileSizeF) (vy * tileSizeF) sx sy)
   newEntity
     ( UIElement,

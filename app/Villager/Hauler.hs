@@ -36,10 +36,6 @@ newHauler position@(Vector2 x y) idlePoint colType = do
         defaultIdleInfo idlePoint,
         Position position,
         Sprite,
-        -- AtlasRegion (Rectangle (6.0 * tileSizeCF) (12.0 * tileSizeCF) tileSizeCF tileSizeCF),
-        -- ( Collision False Nothing False,
-        --   CollisionBox (Rectangle x y tileSizeCF tileSizeCF)
-        -- )
         AtlasRegion (Rectangle (6.0 * tileSizeF) (12.0 * tileSizeF) tileSizeF tileSizeF),
         ( Collision False Nothing False,
           CollisionBox (Rectangle x y tileSizeF tileSizeF)

@@ -13,7 +13,6 @@ import Raylib.Types (Rectangle (..), Vector2 (..))
 permutate :: [a] -> [a] -> [(a, a)]
 permutate l1 l2 = (,) <$> l1 <*> l2
 
--- sumV2 :: Vector2 -> CFloat
 sumV2 :: Vector2 -> Float
 sumV2 (Vector2 x y) = x + y
 
@@ -34,7 +33,6 @@ sumV2 (Vector2 x y) = x + y
 (Vector2 x1 y1) |-| (Vector2 x2 y2) = Vector2 (x1 - x2) (y1 - y2)
 
 -- | Subtract a factor from a Vector2
--- (|-#|) :: Vector2 -> CFloat -> Vector2
 (|-#|) :: Vector2 -> Float -> Vector2
 (Vector2 x y) |-#| factor = Vector2 (x - factor) (y - factor)
 
@@ -43,7 +41,6 @@ sumV2 (Vector2 x y) = x + y
 (Vector2 x1 y1) |/| (Vector2 x2 y2) = Vector2 (x1 / x2) (y1 / y2)
 
 -- | Divide a Vector2 by a factor
--- (|/#|) :: Vector2 -> CFloat -> Vector2
 (|/#|) :: Vector2 -> Float -> Vector2
 (Vector2 x y) |/#| factor = Vector2 (x / factor) (y / factor)
 
@@ -52,9 +49,7 @@ sumV2 (Vector2 x y) = x + y
 (Vector2 x1 y1) |*| (Vector2 x2 y2) = Vector2 (x1 * x2) (y1 * y2)
 
 -- | Multiply a Vector2 by a factor
--- (|*#|) :: Vector2 -> CFloat -> Vector2
 (|*#|) :: Vector2 -> Float -> Vector2
--- (Vector2 x y) |*#| factor = Vector2 (x * factor :: CFloat) (y * factor)
 (Vector2 x y) |*#| factor = Vector2 (x * factor) (y * factor)
 
 -- vectorLength :: Vector2 -> CFloat
